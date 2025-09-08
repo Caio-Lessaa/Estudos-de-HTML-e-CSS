@@ -37,3 +37,17 @@ h2 {
 #algum-titulo {
     border-bottom: solid green;
 }
+
+/* nome de cores */
+.color-name {
+    color: crimson  
+}
+
+/* Cor hexadecimal */
+.hex {
+    color: #1900ff
+}
+
+.hex-2 {
+    color: #A6E843
+}
