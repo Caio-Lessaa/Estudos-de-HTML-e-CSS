@@ -11,3 +11,9 @@ h2 {
 p {
     color: blueviolet
 }
+
+.paragraph {
+    background-color: #000;
+    color: aqua;
+    padding: 4px;
+}
