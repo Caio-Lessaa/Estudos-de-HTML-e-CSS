@@ -4,16 +4,36 @@ body {
     padding-bottom: 500px;
 }
 
-h2 {
-    color: green
-}
-
 p {
     color: blueviolet
 }
 
+
+/* Para Classes o seletor no arquivo CSS é o "." e após é colocado o nome dado a classe*/
 .paragraph {
     background-color: #000;
     color: aqua;
     padding: 4px;
+}
+
+/* Id's*/
+/* Pra Id's o seletor no arquivo CSS é o "#" e após ele é colocado o nome dado ao ID*/
+#exclusive-title {
+    background-color: purple;
+    color: yellow;
+    padding: 10px;
+    font-size: 60px;
+}
+
+/* Ordem das regras */
+h2 {
+    border-bottom: 3px solid red;
+}
+
+.titulo {
+    border-bottom: solid blue;
+}
+
+#algum-titulo {
+    border-bottom: solid green;
 }
