@@ -1,72 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS</title>
-    <!-- Internal CSS -->
-     <style>
-        p {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS</title>
+  <!-- Internal CSS -->
+  <style>
+    /* p {
             color: orange;
             font-size: 50px;
-        }
-     </style>
-     <!-- External CSS -->
-      <link rel="stylesheet" href="css/styles.css">
-      <link rel="stylesheet" href="css/lists.css">
+        } */
+  </style>
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/lists.css">
 </head>
+
 <body>
-    <!-- Inline CSS -->
-     <h1 style="color: blue">Mudar a cor com Inline</h1>
-     <h1 style="color: red">Outro titulo</h1>
-     <p>Reutilizando a regar Internal style do CSS</p>
-     <!-- Multiplas regras -->
-      <h1 style="color: purple; font-size: 70px; border-bottom: 2px solid red;">Mudar cor e tamanho da fonte</h1>
+  <!-- Inline CSS -->
+  <h1 style="color: blue">Mudar a cor com Inline</h1>
+  <h1 style="color: red">Outro titulo</h1>
+  <p>Reutilizando a regar Internal style do CSS</p>
+  <!-- Multiplas regras -->
+  <h1 style="color: purple; font-size: 70px; border-bottom: 2px solid red;">Mudar cor e tamanho da fonte</h1>
 
-    <!-- Internal CSS -->
-     <p>Estilizando por meio de Internal</p>
+  <!-- Internal CSS -->
+  <p>Estilizando por meio de Internal</p>
 
-     <!-- External CSS -->
-      <h2>Inserindo estilização por External CSS</h2>
+  <!-- External CSS -->
+  <h2>Inserindo estilização por External CSS</h2>
 
-      <!-- Ordem do CSS -->
-       <p style="color: red">Ordem do CSS</p>
-       <p>Ordem do CSS 2</p>
+  <!-- Ordem do CSS -->
+  <p style="color: red">Ordem do CSS</p>
+  <p>Ordem do CSS 2</p>
 
-       <!-- Multiplos CSS -->
-        <ul>
-            <li>Banana</li>
-            <li>Maçã</li>
-            <li>Abacate</li>
-        </ul>
+  <!-- Multiplos CSS -->
+  <ul>
+    <li>Banana</li>
+    <li>Maçã</li>
+    <li>Abacate</li>
+  </ul>
 
-        <!-- Classes -->
+  <!-- Classes -->
 
-        <p class="paragraph">Parágrafo com classe</p>
-        <p class="paragraph">Segundo Parágrafo com classe</p>
-        <p class="paragraph">Terceiro Parágrafo com classe</p>
+  <p class="paragraph">Parágrafo com classe</p>
+  <p class="paragraph">Segundo Parágrafo com classe</p>
+  <p class="paragraph">Terceiro Parágrafo com classe</p>
 
-        <!-- ID -->
-         <h1 id="exclusive-title">Este é um título com ID</h1>
-
-
-         <!-- Multiplas regras, ordem do CSS -->
-
-         <h2 id="algum-titulo" class="titulo">Titulo com classe e id 1</h2>
-         <h2 class="titulo">Titulo com classe e id 2</h2>
-         <h2>Titulo com classe e id 1</h2>
+  <!-- ID -->
+  <h1 id="exclusive-title">Este é um título com ID</h1>
 
 
-         <!-- Nome de Cor -->
-          <p class="color-name">Texto para testar nome de cores</p>
+  <!-- Multiplas regras, ordem do CSS -->
 
-          <!-- Cores Hexadecimais -->
-           <p class="hex">Parágrafo com cor hexadecimal</p>
-           <p class="hex-2">Parágrafo com cor hexadecimal</p>
+  <h2 id="algum-titulo" class="titulo">Titulo com classe e id 1</h2>
+  <h2 class="titulo">Titulo com classe e id 2</h2>
+  <h2>Titulo com classe e id 1</h2>
 
-           <ol>
-            <li>teste 1</li>
-            <li>teste 2</li>
-           </ol>
+
+  <!-- Nome de Cor -->
+  <p class="color-name">Texto para testar nome de cores</p>
+
+  <!-- Cores Hexadecimais -->
+  <p class="hex">Parágrafo com cor hexadecimal</p>
+  <p class="hex-2">Parágrafo com cor hexadecimal</p>
+
+  <p class="hsl">Parágrafo utilizando cor HSL</p>
+
+
+  <!-- Background color -->
+  <h3 class="bg">Mudando cor do Background</h3>
+  <p class="bg">Parágrafo com Background</p>
+
+  <!-- Opacity in bg -->
+  <div class="bg-opacity">
+    <p>Estou aqui</p>
+  </div>
+
+
+  <!-- rgba com opacidade -->
+  <div class="rgba-opacity">
+    <h1>Este titulo precisa estar visível</h1>
+  </div>
+
+  <!-- bg image -->
+
+  <h1 class="bg-image">Este título tem uma imagem</h1>
+
+  <!-- centralizar img de bg -->
+  <div class="not-centered-bg"></div>
+  <div class="centered-bg"></div>
+
+
+  <!-- largura e altura -->
+  <div class="height-width"></div>
+  <div class="height-width2"></div>
+
+  <!-- padding -->
+  <div class="whithout-padding">Este não tem padding</div>
+  <div class="whith-padding">Esse tem padding</div>
+
+  <p class="padding-individual">Este elemento tem paddings diferentes</p>
+
+  <p class="shorthand-padding">Algum texto</p>
+
+  <div class="hwithout-border-box">
+    <p>Algum conteúdo</p>
+  </div>
+  <div class="border-box">
+    <p>Algum conteúdo 2</p>
+  </div>
+
+  
 </body>
+
 </html>

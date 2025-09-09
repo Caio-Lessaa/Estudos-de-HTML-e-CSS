@@ -4,11 +4,6 @@ body {
     padding-bottom: 500px;
 }
 
-p {
-    color: blueviolet
-}
-
-
 /* Para Classes o seletor no arquivo CSS é o "." e após é colocado o nome dado a classe*/
 .paragraph {
     background-color: #000;
@@ -50,4 +45,93 @@ h2 {
 
 .hex-2 {
     color: #A6E843
+}
+
+/* HSL */
+.hsl {
+    color: hsl(32, 73%, 34%)
+}
+
+.bg {
+    background-color: #000;
+    color: #ff7c73;
+}
+
+.bg-opacity {
+    background-color: #000000d8;
+    opacity: 1;
+    color: #99ff00;
+}
+
+.rgba-opacity {
+    background-color: rgba(90, 120, 20, 0.2);
+    color: #000 ;
+}
+
+.bg-image {
+    background-image: url("../CSS/img/180_kit_max_force_profissional_3_em_1_3371_1_3556ef51a39cb71f542af925ac8aaa77.webp");
+    padding: 10px;
+    color: #000;
+}
+
+.not-centered-bg,
+.centered-bg {
+    height: 400px;
+    width: 400px;
+    background-image: url("../CSS/img/180_kit_power_repair_home_care_c_power_luminous_oil_3439_1_c6c1644e3dc699522b492b0a6fec31cb.webp");
+}
+
+.centered-bg {
+    background-image: center;
+    background-size: cover;
+}
+
+.height-width {
+    height: 200px;
+    width: 100px;
+    background-color: #1900ff;
+}
+
+.whithout-padding, 
+.whith-padding {
+    background-color: #111;
+    color:#fff;
+}
+
+.whith-padding {
+    background-color: #99ff00;
+    padding: 20px;
+    padding-right: 0px;
+    width: 500px;
+}
+
+.padding-individual {
+    background-color: #222;
+    color: #fff;
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 20px;
+    padding-bottom: 40px;
+}
+
+.shorthand-padding {
+    background-color: #444;
+    padding: 10px 20px;
+}
+
+.hwithout-border-box {
+    background-color: #444;
+    color: #fff;
+    width: 400px;
+    padding: 50px;
+}
+
+.border-box {
+    background-color: #A6E843;
+    color: #FFF;
+    width: 300px;
+    padding: 32px;
+    box-sizing: border-box;
+
+    border: 5px solid #000
 }
