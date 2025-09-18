@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Vendedor - Sistema de Gestão</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Vendedor Dashboard</h2>
+                <p id="user-info">Carregando...</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#clientes" onclick="showSection('clientes')" class="nav-link active">Clientes</a></li>
+                    <li><a href="#produtos" onclick="showSection('produtos')" class="nav-link">Produtos</a></li>
+                    <li><a href="#pedidos" onclick="showSection('pedidos')" class="nav-link">Pedidos</a></li>
+                    <li><a href="#comissoes" onclick="showSection('comissoes')" class="nav-link">Comissões</a></li>
+                    <li><a href="#usuarios" onclick="showSection('usuarios')" class="nav-link">Usuários</a></li>
+                </ul>
+            </nav>
+            
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="navbar">
+                <h1>Sistema de Gestão</h1>
+                <div class="user-info">
+                    <span>Vendedor</span>
+                </div>
+            </div>
+
+            <!-- Clientes Section -->
+            <section id="clientes-section" class="content-area">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Clientes</h2>
+                    <button class="btn-primary" onclick="openModal('cliente-modal')">Novo Cliente</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>CPF</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientes-table">
+                            <tr>
+                                <td colspan="6" class="text-center">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="clientes-pagination"></div>
+            </section>
+
+            <!-- Produtos Section -->
+            <section id="produtos-section" class="content-area hidden">
+                <h2>Produtos</h2>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Nome</label>
+                        <input type="text" id="produto-nome-filter" placeholder="Filtrar por nome">
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn-primary" onclick="loadProdutos()">Filtrar</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Descrição</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produtos-table">
+                            <tr>
+                                <td colspan="5" class="text-center">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="produtos-pagination"></div>
+            </section>
+
+            <!-- Pedidos Section -->
+            <section id="pedidos-section" class="content-area hidden">
+                <h2>Pedidos</h2>
+                
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Data</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidos-table">
+                            <tr>
+                                <td colspan="5" class="text-center">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pedidos-pagination"></div>
+            </section>
+
+            <!-- Comissões Section -->
+            <section id="comissoes-section" class="content-area hidden">
+                <h2>Consultar Comissão Mensal</h2>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Ano</label>
+                        <input type="number" id="comissao-ano" value="2025" min="2020" max="2030">
+                    </div>
+                    <div class="filter-group">
+                        <label>Mês</label>
+                        <select id="comissao-mes">
+                            <option value="1">Janeiro</option>
+                            <option value="2">Fevereiro</option>
+                            <option value="3">Março</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Maio</option>
+                            <option value="6">Junho</option>
+                            <option value="7">Julho</option>
+                            <option value="8">Agosto</option>
+                            <option value="9" selected>Setembro</option>
+                            <option value="10">Outubro</option>
+                            <option value="11">Novembro</option>
+                            <option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn-primary" onclick="consultarComissoes()">Consultar</button>
+                    </div>
+                </div>
+                
+                <div id="comissoes-result" class="mt-20"></div>
+            </section>
+
+            <!-- Usuários Section -->
+            <section id="usuarios-section" class="content-area hidden">
+                <h2>Atualizar Dados Pessoais</h2>
+                
+                <form id="atualizar-dados-form" class="form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="vendedor-nome">Nome</label>
+                            <input type="text" id="vendedor-nome" name="nome" required>
+                            <span class="error-message" id="nome-error"></span>
+                        </div>
+                        <div class="form-col">
+                            <label for="vendedor-email">Email</label>
+                            <input type="email" id="vendedor-email" name="email" required>
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="vendedor-telefone">Telefone</label>
+                            <input type="text" id="vendedor-telefone" name="telefone">
+                            <span class="error-message" id="telefone-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span class="btn-text">Atualizar Dados</span>
+                            <span class="btn-loading" style="display: none;">Salvando...</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="mt-20 mb-20">
+                
+                <h3>Redefinir Senha</h3>
+                
+                <form id="redefinir-senha-form" class="form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="senha-atual">Senha Atual</label>
+                            <input type="password" id="senha-atual" name="senhaAtual" required>
+                            <span class="error-message" id="senhaAtual-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="nova-senha">Nova Senha</label>
+                            <input type="password" id="nova-senha" name="novaSenha" required>
+                            <span class="error-message" id="novaSenha-error"></span>
+                        </div>
+                        <div class="form-col">
+                            <label for="confirmar-senha">Confirmar Nova Senha</label>
+                            <input type="password" id="confirmar-senha" name="confirmarSenha" required>
+                            <span class="error-message" id="confirmarSenha-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span class="btn-text">Redefinir Senha</span>
+                            <span class="btn-loading" style="display: none;">Salvando...</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Cliente Modal -->
+    <div id="cliente-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Cliente</h3>
+                <button class="modal-close" onclick="closeModal('cliente-modal')">&times;</button>
+            </div>
+            
+            <form id="cliente-form">
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="cliente-nome">Nome</label>
+                        <input type="text" id="cliente-nome" name="nome" required>
+                        <span class="error-message" id="nome-error"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="cliente-email">Email</label>
+                        <input type="email" id="cliente-email" name="email" required>
+                        <span class="error-message" id="email-error"></span>
+                    </div>
+                    <div class="form-col">
+                        <label for="cliente-telefone">Telefone</label>
+                        <input type="text" id="cliente-telefone" name="telefone">
+                        <span class="error-message" id="telefone-error"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="cliente-cpf">CPF</label>
+                        <input type="text" id="cliente-cpf" name="cpf" required>
+                        <span class="error-message" id="cpf-error"></span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('cliente-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <span class="btn-text">Salvar</span>
+                        <span class="btn-loading" style="display: none;">Salvando...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/vendedor-dashboard.js"></script>
+</body>
+
+</html>

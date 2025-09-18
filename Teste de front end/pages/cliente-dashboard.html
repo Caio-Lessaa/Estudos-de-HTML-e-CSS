@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DALCOTONE - E-commerce</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <!-- E-commerce Header -->
+    <header class="ecommerce-header">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <h1 style="color: white; margin: 0; font-size: 1.5rem;">DALCOTONE</h1>
+                    <div style="position: relative;">
+                        <input type="text" id="search-input" placeholder="BUSCAR PRODUTOS..."
+                            style="padding: 8px 40px 8px 12px; border: none; border-radius: 20px; width: 300px;">
+                        <button onclick="searchProducts()"
+                            style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">🔍</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 20px;">
+
+                    <div style="display: flex; align-items: center; gap: 15px; color: white;">
+                        <span id="user-greeting">Minha Conta</span>
+                        <div class="cart-icon" onclick="toggleCart()">
+                            🛒
+                            <span class="cart-count" id="cart-count">0</span>
+                        </div>
+                        <button onclick="logout()"
+                            style="background: none; border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Sair</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="ecommerce-nav">
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+            <a href="#" onclick="showSection('produtos')" class="nav-link active">LINHA PROFISSIONAL</a>
+            <a href="#" onclick="showSection('produtos')">CUIDADOS DIÁRIOS</a>
+            <a href="#" onclick="showSection('produtos')">MÁSCARAS CAPILARES</a>
+            <a href="#" onclick="showSection('produtos')">AMPOLAS</a>
+            <a href="#" onclick="showSection('produtos')">FINALIZADORES</a>
+            <a href="#" onclick="showSection('produtos')">ENCAPSULADOS</a>
+            <a href="#" onclick="showSection('pedidos')">MEUS PEDIDOS</a>
+            <a href="#" onclick="showSection('perfil')">MEU PERFIL</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="min-height: 100vh; background: #f8f9fa; padding: 20px 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+
+            <!-- Produtos Section -->
+            <div class="filters" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <div class="filter-group">
+                    <label>Buscar produtos</label>
+                    <input type="text" id="produto-nome-filter" placeholder="Digite o nome do produto">
+                </div>
+                <div class="filter-group">
+                    <button class="btn-primary" onclick="loadProdutos()">Buscar</button>
+                </div>
+            </div>
+
+            <div class="product-grid" id="produtos-grid">
+                <!-- Products will be loaded here -->
+            </div>
+
+            <div id="produtos-pagination"></div>
+            </section>
+
+            <!-- Pedidos Section -->
+            <section id="pedidos-section" class="content-area hidden">
+                <h2>Meus Pedidos</h2>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidos-table">
+                            <tr>
+                                <td colspan="5" class="text-center">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pedidos-pagination"></div>
+            </section>
+
+            <!-- Perfil Section -->
+            <section id="perfil-section" class="content-area hidden">
+                <h2>Meu Perfil</h2>
+
+                <form id="atualizar-perfil-form" class="form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="cliente-nome">Nome</label>
+                            <input type="text" id="cliente-nome" name="nome" required>
+                            <span class="error-message" id="nome-error"></span>
+                        </div>
+                        <div class="form-col">
+                            <label for="cliente-email">Email</label>
+                            <input type="email" id="cliente-email" name="email" required>
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="cliente-telefone">Telefone</label>
+                            <input type="text" id="cliente-telefone" name="telefone">
+                            <span class="error-message" id="telefone-error"></span>
+                        </div>
+                        <div class="form-col">
+                            <label for="cliente-cpf">CPF</label>
+                            <input type="text" id="cliente-cpf" name="cpf">
+                            <span class="error-message" id="cpf-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span class="btn-text">Atualizar Perfil</span>
+                            <span class="btn-loading" style="display: none;">Salvando...</span>
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="mt-20 mb-20">
+
+                <h3>Redefinir Senha</h3>
+
+                <form id="redefinir-senha-form" class="form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="senha-atual">Senha Atual</label>
+                            <input type="password" id="senha-atual" name="senhaAtual" required>
+                            <span class="error-message" id="senhaAtual-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="nova-senha">Nova Senha</label>
+                            <input type="password" id="nova-senha" name="novaSenha" required>
+                            <span class="error-message" id="novaSenha-error"></span>
+                        </div>
+                        <div class="form-col">
+                            <label for="confirmar-senha">Confirmar Nova Senha</label>
+                            <input type="password" id="confirmar-senha" name="confirmarSenha" required>
+                            <span class="error-message" id="confirmarSenha-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <span class="btn-text">Redefinir Senha</span>
+                            <span class="btn-loading" style="display: none;">Salvando...</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Carrinho de Compras</h3>
+                <button onclick="toggleCart()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <div id="cart-items" class="cart-items">
+                <!-- Cart items will be loaded here -->
+            </div>
+
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <strong>Total: <span id="cart-total">R$ 0,00</span></strong>
+                </div>
+                <button class="btn-primary" onclick="finalizarCompra()" style="width: 100%; margin-top: 10px;">
+                    Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cliente-dashboard.js"></script>
+
+    <style>
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .cart-content {
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        .cart-total {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+    </style>
+</body>
+
+</html>
