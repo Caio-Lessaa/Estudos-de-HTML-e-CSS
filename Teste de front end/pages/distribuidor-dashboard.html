@@ -15,9 +15,8 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>Distribuidor Dashboard</h2>
-                <p id="user-info">Carregando...</p>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="#clientes" onclick="showSection('clientes')" class="nav-link active">Clientes</a></li>
@@ -28,7 +27,7 @@
                     <li><a href="#usuarios" onclick="showSection('usuarios')" class="nav-link">Perfil</a></li>
                 </ul>
             </nav>
-            
+
             <button class="logout-btn" onclick="logout()">Sair</button>
         </aside>
 
@@ -44,7 +43,7 @@
             <!-- Clientes Section -->
             <section id="clientes-section" class="content-area">
                 <h2>Clientes</h2>
-                
+
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -64,7 +63,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div id="clientes-pagination"></div>
             </section>
 
@@ -74,7 +73,7 @@
                     <h2>Vendedores</h2>
                     <button class="btn-primary" onclick="openModal('vendedor-modal')">Novo Vendedor</button>
                 </div>
-                
+
                 <div class="filters">
                     <div class="filter-group">
                         <label>Nome</label>
@@ -92,7 +91,7 @@
                         <button class="btn-primary" onclick="loadVendedores()">Filtrar</button>
                     </div>
                 </div>
-                
+
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -112,7 +111,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div id="vendedores-pagination"></div>
             </section>
 
@@ -122,7 +121,7 @@
                     <h2>Produtos</h2>
                     <button class="btn-primary" onclick="openModal('produto-modal')">Novo Produto</button>
                 </div>
-                
+
                 <div class="filters">
                     <div class="filter-group">
                         <label>Nome</label>
@@ -132,34 +131,40 @@
                         <button class="btn-primary" onclick="loadProdutos()">Filtrar</button>
                     </div>
                 </div>
-                
+
                 <div class="table-container">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Código</th>
                                 <th>Nome</th>
+                                <th>Categoria</th>
                                 <th>Descrição</th>
-                                <th>Preço</th>
-                                <th>Estoque</th>
+                                <th>Preço Venda</th>
+                                <th>Preço Custo</th>
+                                <th>Estoque Atual</th>
+                                <th>Estoque Mínimo</th>
+                                <th>NCM</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="produtos-table">
                             <tr>
-                                <td colspan="6" class="text-center">Carregando...</td>
+                                <td colspan="11" class="text-center">Carregando...</td>
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
-                
+
                 <div id="produtos-pagination"></div>
             </section>
 
             <!-- Pedidos Section -->
             <section id="pedidos-section" class="content-area hidden">
                 <h2>Pedidos</h2>
-                
+
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -179,14 +184,14 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div id="pedidos-pagination"></div>
             </section>
 
             <!-- Comissões Section -->
             <section id="comissoes-section" class="content-area hidden">
                 <h2>Consultar Comissões de Vendedores</h2>
-                
+
                 <div class="filters">
                     <div class="filter-group">
                         <label>Vendedor</label>
@@ -219,14 +224,14 @@
                         <button class="btn-primary" onclick="consultarComissoes()">Consultar</button>
                     </div>
                 </div>
-                
+
                 <div id="comissoes-result" class="mt-20"></div>
             </section>
 
             <!-- Usuários Section -->
             <section id="usuarios-section" class="content-area hidden">
                 <h2>Redefinir Senha</h2>
-                
+
                 <form id="redefinir-senha-form" class="form">
                     <div class="form-row">
                         <div class="form-col">
@@ -235,7 +240,7 @@
                             <span class="error-message" id="senhaAtual-error"></span>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-col">
                             <label for="nova-senha">Nova Senha</label>
@@ -248,7 +253,7 @@
                             <span class="error-message" id="confirmarSenha-error"></span>
                         </div>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">
                             <span class="btn-text">Redefinir Senha</span>
@@ -268,16 +273,23 @@
                 <h3>Novo Vendedor</h3>
                 <button class="modal-close" onclick="closeModal('vendedor-modal')">&times;</button>
             </div>
-            
+
             <form id="vendedor-form">
+                <!-- Nome e CPF -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="vendedor-nome">Nome</label>
                         <input type="text" id="vendedor-nome" name="nome" required>
                         <span class="error-message" id="nome-error"></span>
                     </div>
+                    <div class="form-col">
+                        <label for="vendedor-cpf">CPF</label>
+                        <input type="text" id="vendedor-cpf" name="cpf" data-mask="cpf" required>
+                        <span class="error-message" id="cpf-error"></span>
+                    </div>
                 </div>
-                
+
+                <!-- Email e Telefone -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="vendedor-email">Email</label>
@@ -286,11 +298,72 @@
                     </div>
                     <div class="form-col">
                         <label for="vendedor-telefone">Telefone</label>
-                        <input type="text" id="vendedor-telefone" name="telefone">
+                        <input type="text" id="vendedor-telefone" name="telefone" data-mask="telefone" required>
                         <span class="error-message" id="telefone-error"></span>
                     </div>
                 </div>
-                
+
+                <!-- Informações adicionais -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="vendedor-informacoes-adicionais">Informações Adicionais</label>
+                        <textarea id="vendedor-informacoes-adicionais" name="informacoesAdicionais" rows="3"></textarea>
+                        <span class="error-message" id="informacoesAdicionais-error"></span>
+                    </div>
+                </div>
+
+                <!-- CEP e Rua -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="vendedor-cep">CEP</label>
+                        <input type="text" id="vendedor-cep" name="cep" data-mask="cep" required>
+                        <span class="error-message" id="cep-error"></span>
+                    </div>
+                    <div class="form-col">
+                        <label for="vendedor-rua">Rua</label>
+                        <input type="text" id="vendedor-rua" name="rua" required>
+                        <span class="error-message" id="rua-error"></span>
+                    </div>
+                </div>
+
+                <!-- Número e Bairro -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="vendedor-numero">Número</label>
+                        <input type="text" id="vendedor-numero" name="numero" required>
+                        <span class="error-message" id="numero-error"></span>
+                    </div>
+                    <div class="form-col">
+                        <label for="vendedor-bairro">Bairro</label>
+                        <input type="text" id="vendedor-bairro" name="bairro" required>
+                        <span class="error-message" id="bairro-error"></span>
+                    </div>
+                </div>
+
+                <!-- Cidade e Estado -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="vendedor-cidade">Cidade</label>
+                        <input type="text" id="vendedor-cidade" name="cidade" required>
+                        <span class="error-message" id="cidade-error"></span>
+                    </div>
+                    <div class="form-col">
+                        <label for="vendedor-estado">Estado</label>
+                        <input type="text" id="vendedor-estado" name="estado" required>
+                        <span class="error-message" id="estado-error"></span>
+                    </div>
+                </div>
+
+                <!-- Complemento -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="vendedor-complemento">Complemento</label>
+                        <input type="text" id="vendedor-complemento" name="complemento">
+                        <span class="error-message" id="complemento-error"></span>
+                    </div>
+                </div>
+
+                <!-- Botões -->
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal('vendedor-modal')">Cancelar</button>
                     <button type="submit" class="btn-primary">
@@ -302,6 +375,7 @@
         </div>
     </div>
 
+
     <!-- Produto Modal -->
     <div id="produto-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -309,8 +383,19 @@
                 <h3 id="produto-modal-title">Novo Produto</h3>
                 <button class="modal-close" onclick="closeModal('produto-modal')">&times;</button>
             </div>
-            
+
             <form id="produto-form">
+                <input type="hidden" id="produto-id" name="id">
+                <!-- Código -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-codigo">Código</label>
+                        <input type="text" id="produto-codigo" name="codigoProduto" required>
+                        <span class="error-message" id="codigoProduto-error"></span>
+                    </div>
+                </div>
+
+                <!-- Nome -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="produto-nome">Nome</label>
@@ -318,7 +403,8 @@
                         <span class="error-message" id="nome-error"></span>
                     </div>
                 </div>
-                
+
+                <!-- Descrição -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="produto-descricao">Descrição</label>
@@ -326,20 +412,71 @@
                         <span class="error-message" id="descricao-error"></span>
                     </div>
                 </div>
-                
+
+                <!-- Preço Custo -->
                 <div class="form-row">
                     <div class="form-col">
-                        <label for="produto-preco">Preço</label>
-                        <input type="number" id="produto-preco" name="preco" step="0.01" required>
-                        <span class="error-message" id="preco-error"></span>
-                    </div>
-                    <div class="form-col">
-                        <label for="produto-estoque">Estoque</label>
-                        <input type="number" id="produto-estoque" name="estoque" required>
-                        <span class="error-message" id="estoque-error"></span>
+                        <label for="produto-preco-custo">Preço Custo</label>
+                        <input type="number" id="produto-preco-custo" name="precoCusto" step="0.01" required>
+                        <span class="error-message" id="precoCusto-error"></span>
                     </div>
                 </div>
-                
+
+                <!-- Preço Venda -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-preco">Preço Venda</label>
+                        <input type="number" id="produto-preco" name="precoVenda" step="0.01" required>
+                        <span class="error-message" id="precoVenda-error"></span>
+                    </div>
+                </div>
+
+                <!-- Estoque Atual -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-estoque">Estoque Atual</label>
+                        <input type="number" id="produto-estoque" name="estoqueAtual" required>
+                        <span class="error-message" id="estoqueAtual-error"></span>
+                    </div>
+                </div>
+
+                <!-- Estoque Mínimo -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-estoque-minimo">Estoque Mínimo</label>
+                        <input type="number" id="produto-estoque-minimo" name="estoqueMinimo" required>
+                        <span class="error-message" id="estoqueMinimo-error"></span>
+                    </div>
+                </div>
+
+                <!-- NCM -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-ncm">NCM</label>
+                        <input type="text" id="produto-ncm" name="ncm" required>
+                        <span class="error-message" id="ncm-error"></span>
+                    </div>
+                </div>
+
+                <!-- Categoria -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-categoria">Categoria</label>
+                        <input type="text" id="produto-categoria" name="categoria" required>
+                        <span class="error-message" id="categoria-error"></span>
+                    </div>
+                </div>
+
+                <!-- Imagem -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-img">Imagem</label>
+                        <input type="text" id="produto-img" name="imgUrl">
+                        <span class="error-message" id="imgUrl-error"></span>
+                    </div>
+                </div>
+
+                <!-- Botões -->
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal('produto-modal')">Cancelar</button>
                     <button type="submit" class="btn-primary">
@@ -350,6 +487,7 @@
             </form>
         </div>
     </div>
+
 
     <div id="toast-container"></div>
 

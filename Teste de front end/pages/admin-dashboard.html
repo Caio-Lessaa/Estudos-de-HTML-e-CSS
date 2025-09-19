@@ -15,7 +15,6 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>Admin Dashboard</h2>
-                <p id="user-info">Carregando...</p>
             </div>
 
             <nav class="sidebar-nav">
@@ -55,10 +54,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th>Email</th>
-                                <th>Telefone</th>
-                                <th>Status</th>
-                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="distribuidores-table">
@@ -166,24 +161,32 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Código</th>
                                 <th>Nome</th>
+                                <th>Categoria</th>
                                 <th>Descrição</th>
-                                <th>Preço</th>
-                                <th>Estoque</th>
+                                <th>Preço Venda</th>
+                                <th>Preço Custo</th>
+                                <th>Estoque Atual</th>
+                                <th>Estoque Mínimo</th>
+                                <th>NCM</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="produtos-table">
                             <tr>
-                                <td colspan="6" class="text-center">Carregando...</td>
+                                <td colspan="11" class="text-center">Carregando...</td>
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
 
                 <div id="produtos-pagination"></div>
             </section>
 
+            <div id="produtos-pagination"></div>
+            </section>
             <!-- Pedidos Section -->
             <section id="pedidos-section" class="content-area hidden">
                 <h2>Pedidos</h2>
@@ -266,19 +269,6 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-col">
-                        <label for="distribuidor-email">Email</label>
-                        <input type="email" id="distribuidor-email" name="email" required>
-                        <span class="error-message" id="email-error"></span>
-                    </div>
-                    <div class="form-col">
-                        <label for="distribuidor-telefone">Telefone</label>
-                        <input type="text" id="distribuidor-telefone" name="telefone" required>
-                        <span class="error-message" id="telefone-error"></span>
-                    </div>
-                </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn-secondary"
                         onclick="closeModal('distribuidor-modal')">Cancelar</button>
@@ -300,6 +290,18 @@
             </div>
 
             <form id="produto-form">
+                <input type="hidden" id="produto-id" name="id">
+
+                <!-- Código -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-codigo">Código</label>
+                        <input type="text" id="produto-codigo" name="codigoProduto" required>
+                        <span class="error-message" id="codigoProduto-error"></span>
+                    </div>
+                </div>
+
+                <!-- Nome -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="produto-nome">Nome</label>
@@ -308,6 +310,7 @@
                     </div>
                 </div>
 
+                <!-- Descrição -->
                 <div class="form-row">
                     <div class="form-col">
                         <label for="produto-descricao">Descrição</label>
@@ -316,19 +319,70 @@
                     </div>
                 </div>
 
+                <!-- Preço Custo -->
                 <div class="form-row">
                     <div class="form-col">
-                        <label for="produto-preco">Preço</label>
-                        <input type="number" id="produto-preco" name="preco" step="0.01" required>
-                        <span class="error-message" id="preco-error"></span>
-                    </div>
-                    <div class="form-col">
-                        <label for="produto-estoque">Estoque</label>
-                        <input type="number" id="produto-estoque" name="estoque" required>
-                        <span class="error-message" id="estoque-error"></span>
+                        <label for="produto-preco-custo">Preço Custo</label>
+                        <input type="number" id="produto-preco-custo" name="precoCusto" step="0.01" required>
+                        <span class="error-message" id="precoCusto-error"></span>
                     </div>
                 </div>
 
+                <!-- Preço Venda -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-preco">Preço Venda</label>
+                        <input type="number" id="produto-preco" name="precoVenda" step="0.01" required>
+                        <span class="error-message" id="precoVenda-error"></span>
+                    </div>
+                </div>
+
+                <!-- Estoque Atual -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-estoque">Estoque Atual</label>
+                        <input type="number" id="produto-estoque" name="estoqueAtual" required>
+                        <span class="error-message" id="estoqueAtual-error"></span>
+                    </div>
+                </div>
+
+                <!-- Estoque Mínimo -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-estoque-minimo">Estoque Mínimo</label>
+                        <input type="number" id="produto-estoque-minimo" name="estoqueMinimo" required>
+                        <span class="error-message" id="estoqueMinimo-error"></span>
+                    </div>
+                </div>
+
+                <!-- NCM -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-ncm">NCM</label>
+                        <input type="text" id="produto-ncm" name="ncm" required>
+                        <span class="error-message" id="ncm-error"></span>
+                    </div>
+                </div>
+
+                <!-- Categoria -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-categoria">Categoria</label>
+                        <input type="text" id="produto-categoria" name="categoria" required>
+                        <span class="error-message" id="categoria-error"></span>
+                    </div>
+                </div>
+
+                <!-- Imagem -->
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="produto-img">Imagem</label>
+                        <input type="text" id="produto-img" name="imgUrl">
+                        <span class="error-message" id="imgUrl-error"></span>
+                    </div>
+                </div>
+
+                <!-- Botões -->
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal('produto-modal')">Cancelar</button>
                     <button type="submit" class="btn-primary">

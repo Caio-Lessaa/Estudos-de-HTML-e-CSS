@@ -39,6 +39,7 @@ function getCurrentUser() {
     if (!decoded) return null;
     
     return {
+        id: decoded.sub,
         username: decoded.sub,
         role: decoded.authorities ? decoded.authorities[0] : null,
         exp: decoded.exp

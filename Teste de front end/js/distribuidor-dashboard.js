@@ -5,23 +5,20 @@ let currentPage = 1;
 let editingId = null;
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
     if (user.role !== 'DISTRIBUIDOR') {
         showToast('Acesso negado', 'error');
         logout();
         return;
     }
-    
-    // Update user info
-    document.getElementById('user-info').textContent = `Logado como: ${user.username}`;
-    
+
     // Load initial data
     loadClientes();
     loadVendedoresForSelect();
-    
+
     // Setup forms
     setupForms();
 });
@@ -30,19 +27,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function showSection(section) {
     // Hide all sections
     document.querySelectorAll('.content-area').forEach(el => el.classList.add('hidden'));
-    
+
     // Show selected section
     document.getElementById(`${section}-section`).classList.remove('hidden');
-    
+
     // Update navigation
     document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
     document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
-    
+
     currentSection = section;
     currentPage = 1;
-    
+
     // Load data for section
-    switch(section) {
+    switch (section) {
         case 'clientes':
             loadClientes();
             break;
@@ -91,7 +88,7 @@ async function loadClientes(page = 0) {
 
     } catch (error) {
         console.error('[loadClientes] Erro ao carregar clientes:', error);
-        document.getElementById('clientes-table').innerHTML = 
+        document.getElementById('clientes-table').innerHTML =
             `<tr><td colspan="6" class="text-center text-error">Erro ao carregar clientes.</td></tr>`;
     }
 }
@@ -100,12 +97,12 @@ async function loadClientes(page = 0) {
 // Render Clientes Table
 function renderClientesTable(clientes) {
     const tbody = document.getElementById('clientes-table');
-    
+
     if (!clientes || clientes.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum cliente encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = clientes.map(cliente => `
         <tr>
             <td>${cliente.id}</td>
@@ -123,7 +120,7 @@ function renderClientesTable(clientes) {
 // Delete Cliente
 async function deleteCliente(id) {
     if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
-    
+
     try {
         await ClienteAPI.delete(id);
         showToast('Cliente excluído com sucesso', 'success');
@@ -138,11 +135,11 @@ async function deleteCliente(id) {
 //     try {
 //         const nome = document.getElementById('vendedor-nome-filter')?.value || '';
 //         const status = document.getElementById('vendedor-status-filter')?.value || '';
-        
+
 //         const filters = {};
 //         if (nome) filters.nome = nome;
 //         if (status) filters.status = status;
-        
+
 //         const data = await VendedorAPI.list(page, 10, filters);
 //         renderVendedoresTable(data.content || data);
 //         renderPagination('vendedores', data.totalPages || 1, page);
@@ -191,9 +188,9 @@ async function loadVendedoresForSelect() {
     try {
         const data = await VendedorAPI.list(1, 100);
         const select = document.getElementById('vendedor-comissao-select');
-        
+
         select.innerHTML = '<option value="">Selecione um vendedor</option>';
-        
+
         if (data.content || data) {
             const vendedores = data.content || data;
             vendedores.forEach(vendedor => {
@@ -211,12 +208,12 @@ async function loadVendedoresForSelect() {
 // Render Vendedores Table
 function renderVendedoresTable(vendedores) {
     const tbody = document.getElementById('vendedores-table');
-    
+
     if (!vendedores || vendedores.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum vendedor encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = vendedores.map(vendedor => `
         <tr>
             <td>${vendedor.id}</td>
@@ -231,10 +228,76 @@ function renderVendedoresTable(vendedores) {
     `).join('');
 }
 
+// Função para cadastrar vendedor
+async function cadastrarVendedor(event) {
+    event.preventDefault();  // Impede o envio do formulário de forma padrão
+
+    // Pega os valores dos campos
+    const nome = document.getElementById('vendedor-nome').value.trim();
+    const cpf = document.getElementById('vendedor-cpf').value.trim();
+    const email = document.getElementById('vendedor-email').value.trim();
+    const telefone = document.getElementById('vendedor-telefone').value.trim();
+    const cep = document.getElementById('vendedor-cep').value.trim();
+    const rua = document.getElementById('vendedor-rua').value.trim();
+    const numero = document.getElementById('vendedor-numero').value.trim();
+    const bairro = document.getElementById('vendedor-bairro').value.trim();
+    const cidade = document.getElementById('vendedor-cidade').value.trim();
+    const estado = document.getElementById('vendedor-estado').value.trim();
+    const complemento = document.getElementById('vendedor-complemento').value.trim();
+
+    // Validação simples
+    if (!nome || !email || !cep || !rua || !numero || !bairro || !cidade || !estado) {
+        alert('Por favor, preencha todos os campos obrigatórios!');
+        return;
+    }
+
+    // Dados do vendedor
+    const vendedorData = {
+        nome,
+        cpf,
+        email,
+        telefone,
+        informacoesAdicionais: complemento,
+        cep,
+        rua,
+        numero,
+        bairro,
+        cidade,
+        estado,
+        complemento
+    };
+
+    try {
+        // Envia os dados para o backend
+        await VendedorAPI.create(vendedorData);
+
+        // Exibe mensagem de sucesso
+        showToast('Vendedor cadastrado com sucesso!', 'success');
+
+        // Limpa o formulário
+        document.getElementById('vendedor-form').reset();
+
+        // Fecha o modal
+        closeModal('vendedor-modal');
+
+        // Atualiza a lista de vendedores
+        loadVendedores();
+
+    } catch (error) {
+        console.error('Erro ao cadastrar vendedor:', error);
+        showToast('Erro ao cadastrar vendedor.', 'error');
+    }
+}
+
+// Evento de submit para o formulário de cadastro
+document.getElementById('vendedor-form').addEventListener('submit', cadastrarVendedor);
+
+
+
 // Delete Vendedor
 async function deleteVendedor(id) {
     if (!confirm('Tem certeza que deseja desativar este vendedor?')) return;
-    
+
     try {
         await VendedorAPI.delete(id);
         showToast('Vendedor desativado com sucesso', 'success');
@@ -245,25 +308,9 @@ async function deleteVendedor(id) {
     }
 }
 
-// // Load Produtos
-// async function loadProdutos(page = 1) {
-//     try {
-//         const nome = document.getElementById('produto-nome-filter')?.value || '';
-        
-//         const filters = {};
-//         if (nome) filters.nome = nome;
-        
-//         const data = await ProdutoAPI.list(page, 10, filters);
-//         renderProdutosTable(data.content || data);
-//         renderPagination('produtos', data.totalPages || 1, page);
-//         currentPage = page;
-//     } catch (error) {
-//         console.error('Error loading produtos:', error);
-//         document.getElementById('produtos-table').innerHTML = 
-//             '<tr><td colspan="6" class="text-center">Erro ao carregar dados</td></tr>';
-//     }
-// }
+let produtos = []; // Lista global de produtos, para que você possa acessá-la em qualquer parte do código
 
+// Carregar produtos
 async function loadProdutos(page = 0) {
     console.log('[loadProdutos] Chamando com página:', page);
 
@@ -274,14 +321,17 @@ async function loadProdutos(page = 0) {
         if (nome) filters.nome = nome;
 
         const data = await ProdutoAPI.list(page, 10, filters);
-        const produtos = data.content || data;
+        const produtosListados = data.content || data;
 
-        if (!produtos || produtos.length === 0) {
+        if (!produtosListados || produtosListados.length === 0) {
             console.warn('[loadProdutos] Nenhum produto encontrado.');
             renderProdutosTable([]);
             renderPagination('produtos', 1, page);
             return;
         }
+
+        // Salva os produtos carregados no estado global
+        produtos = produtosListados;
 
         renderProdutosTable(produtos);
         renderPagination('produtos', data.totalPages || 1, page);
@@ -293,23 +343,27 @@ async function loadProdutos(page = 0) {
     }
 }
 
-
-// Render Produtos Table
+// Renderiza a tabela de produtos
 function renderProdutosTable(produtos) {
     const tbody = document.getElementById('produtos-table');
-    
+
     if (!produtos || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum produto encontrado</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Nenhum produto encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = produtos.map(produto => `
         <tr>
-            <td>${produto.id}</td>
-            <td>${produto.nome}</td>
+            <td>${produto.id || '-'}</td>
+            <td>${produto.codigoProduto || '-'}</td>
+            <td>${produto.nome || '-'}</td>
+            <td>${produto.categoria || '-'}</td>
             <td>${produto.descricao || '-'}</td>
             <td>${formatCurrency(produto.precoVenda)}</td>
-            <td>${produto.estoque || 0}</td>
+            <td>${formatCurrency(produto.precoCusto)}</td>
+            <td>${produto.estoqueAtual != null ? produto.estoqueAtual : '-'}</td>
+            <td>${produto.estoqueMinimo != null ? produto.estoqueMinimo : '-'}</td>
+            <td>${produto.ncm || '-'}</td>
             <td class="action-buttons">
                 <button class="btn-primary btn-sm" onclick="editProduto(${produto.id})">Editar</button>
                 <button class="btn-danger btn-sm" onclick="deleteProduto(${produto.id})">Excluir</button>
@@ -318,17 +372,84 @@ function renderProdutosTable(produtos) {
     `).join('');
 }
 
-// Edit Produto
-function editProduto(id) {
-    editingId = id;
-    document.getElementById('produto-modal-title').textContent = 'Editar Produto';
-    openModal('produto-modal');
+// Editar Produto
+async function editProduto(id) {
+    console.log('[editProduto] Editando produto com ID:', id);
+
+    try {
+        // Encontra o produto na lista de produtos já carregados
+        const produto = produtos.find(p => p.id === id);
+
+        if (!produto) {
+            alert('Produto não encontrado.');
+            return;
+        }
+
+        // Preenche os campos do modal com os dados do produto
+        document.getElementById('produto-modal-title').textContent = 'Editar Produto';
+        document.getElementById('produto-id').value = produto.id; // Adicionando o ID do produto
+        document.getElementById('produto-codigo').value = produto.codigoProduto || '';
+        document.getElementById('produto-nome').value = produto.nome || '';
+        document.getElementById('produto-descricao').value = produto.descricao || '';
+        document.getElementById('produto-preco-custo').value = produto.precoCusto || '';
+        document.getElementById('produto-preco').value = produto.precoVenda || '';
+        document.getElementById('produto-estoque').value = produto.estoqueAtual || '';
+        document.getElementById('produto-estoque-minimo').value = produto.estoqueMinimo || '';
+        document.getElementById('produto-ncm').value = produto.ncm || '';
+        document.getElementById('produto-categoria').value = produto.categoria || '';
+        document.getElementById('produto-img').value = produto.imgUrl || '';
+
+        // Exibe o modal
+        openModal('produto-modal');
+    } catch (error) {
+        console.error('[editProduto] Erro ao carregar produto:', error);
+        alert('Erro ao carregar produto. Tente novamente.');
+    }
 }
+
+// Salvar Edição de Produto
+async function saveProdutoEdit() {
+    // Pega o ID do produto do campo oculto
+    const id = document.getElementById('produto-id').value;
+
+    // Preenche o objeto produto com os novos dados
+    const produto = {
+        codigoProduto: document.getElementById('produto-codigo').value,
+        nome: document.getElementById('produto-nome').value,
+        descricao: document.getElementById('produto-descricao').value,
+        precoCusto: parseFloat(document.getElementById('produto-preco-custo').value),
+        precoVenda: parseFloat(document.getElementById('produto-preco').value),
+        estoqueAtual: parseInt(document.getElementById('produto-estoque').value),
+        estoqueMinimo: parseInt(document.getElementById('produto-estoque-minimo').value),
+        ncm: document.getElementById('produto-ncm').value,
+        categoria: document.getElementById('produto-categoria').value,
+        imgUrl: document.getElementById('produto-img').value
+    };
+
+    try {
+        // Chama a API para atualizar o produto
+        await ProdutoAPI.update(id, produto);
+
+        // Exibe mensagem de sucesso
+        showToast('Produto atualizado com sucesso', 'success');
+
+        // Fecha o modal
+        closeModal('produto-modal');
+
+        // Recarrega a lista de produtos para refletir a edição
+        loadProdutos();
+    } catch (error) {
+        console.error('[saveProdutoEdit] Erro ao salvar edição:', error);
+        alert('Erro ao atualizar produto. Tente novamente.');
+    }
+}
+
+
 
 // Delete Produto
 async function deleteProduto(id) {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-    
+
     try {
         await ProdutoAPI.delete(id);
         showToast('Produto excluído com sucesso', 'success');
@@ -380,12 +501,12 @@ async function loadPedidos(page = 0) {
 // Render Pedidos Table
 function renderPedidosTable(pedidos) {
     const tbody = document.getElementById('pedidos-table');
-    
+
     if (!pedidos || pedidos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum pedido encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = pedidos.map(pedido => `
         <tr>
             <td>${pedido.id}</td>
@@ -404,7 +525,7 @@ function renderPedidosTable(pedidos) {
 // Finalizar Pedido
 async function finalizarPedido(id) {
     if (!confirm('Tem certeza que deseja finalizar este pedido?')) return;
-    
+
     try {
         await PedidoAPI.finalizar(id);
         showToast('Pedido finalizado com sucesso', 'success');
@@ -417,7 +538,7 @@ async function finalizarPedido(id) {
 // Cancelar Pedido
 async function cancelarPedido(id) {
     if (!confirm('Tem certeza que deseja cancelar este pedido?')) return;
-    
+
     try {
         await PedidoAPI.cancelar(id);
         showToast('Pedido cancelado com sucesso', 'success');
@@ -427,35 +548,45 @@ async function cancelarPedido(id) {
     }
 }
 
-// // Consultar Comissões
-// async function consultarComissoes() {
-//     const vendedorId = document.getElementById('vendedor-comissao-select').value;
-//     const ano = document.getElementById('comissao-ano').value;
-//     const mes = document.getElementById('comissao-mes').value;
-    
-//     if (!vendedorId) {
-//         showToast('Selecione um vendedor', 'warning');
-//         return;
-//     }
-    
-//     try {
-//         const data = await DistribuidorAPI.getComissoes(vendedorId, ano, mes);
-//         renderComissoesResult(data);
-//     } catch (error) {
-//         console.error('Error loading comissoes:', error);
-//         document.getElementById('comissoes-result').innerHTML = 
-//             '<div class="alert alert-danger">Erro ao carregar comissões</div>';
-//     }
-// }
+// Consultar Comissões
+async function consultarComissoes() {
+    const vendedorId = document.getElementById('vendedor-comissao-select').value;
+    const ano = document.getElementById('comissao-ano').value;
+    const mes = document.getElementById('comissao-mes').value;
+
+    console.log('consultarComissoes:', { vendedorId, ano, mes });
+
+
+    if (!vendedorId) {
+        showToast('Selecione um vendedor', 'warning');
+        return;
+    }
+
+    try {
+        const data = await DistribuidorAPI.getComissoes(vendedorId, ano, mes);
+        renderComissoesResult(data);
+    } catch (error) {
+        console.error('Error loading comissoes:', error);
+        document.getElementById('comissoes-result').innerHTML =
+            '<div class="alert alert-danger">Erro ao carregar comissões</div>';
+    }
+}
 
 async function loadVendedoresForSelect() {
     console.log('[loadVendedoresForSelect] Carregando vendedores para select');
 
     try {
-        // Chama a API pedindo 100 vendedores na página 1, sem filtros
-        const data = await VendedorAPI.list(1, 100, {});
+        // Tente passar os parâmetros explicitamente sem o objeto vazio
+        const data = await VendedorAPI.list(0, 100);
+        console.log('[loadVendedoresForSelect] Dados recebidos da API:', data);
 
         const vendedores = data.content || data;
+        console.log('[loadVendedoresForSelect] Vendedores:', vendedores);
+
+        if (!vendedores || vendedores.length === 0) {
+            console.warn('[loadVendedoresForSelect] Nenhum vendedor encontrado para o select');
+            return;
+        }
 
         const select = document.getElementById('vendedor-comissao-select');
         if (!select) {
@@ -464,11 +595,6 @@ async function loadVendedoresForSelect() {
         }
 
         select.innerHTML = '<option value="">Selecione um vendedor</option>';
-
-        if (!vendedores || vendedores.length === 0) {
-            console.warn('[loadVendedoresForSelect] Nenhum vendedor encontrado para o select');
-            return;
-        }
 
         vendedores.forEach(vendedor => {
             const option = document.createElement('option');
@@ -484,47 +610,21 @@ async function loadVendedoresForSelect() {
 }
 
 
+
 // Render Comissões Result
 function renderComissoesResult(data) {
     const container = document.getElementById('comissoes-result');
-    
-    if (!data || (!data.comissoes && !data.total)) {
+
+    if (!data || !data.valorTotal) {
         container.innerHTML = '<div class="alert alert-info">Nenhuma comissão encontrada para o período selecionado</div>';
         return;
     }
-    
+
     container.innerHTML = `
         <div class="content-area">
-            <h3>Resultado da Consulta de Comissões</h3>
-            <div class="form-row">
-                <div class="form-col">
-                    <strong>Total de Comissões: ${formatCurrency(data.total || 0)}</strong>
-                </div>
-            </div>
-            ${data.comissoes ? `
-                <div class="table-container mt-20">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Pedido</th>
-                                <th>Data</th>
-                                <th>Valor Pedido</th>
-                                <th>Comissão</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.comissoes.map(comissao => `
-                                <tr>
-                                    <td>${comissao.pedidoId}</td>
-                                    <td>${formatDate(comissao.data)}</td>
-                                    <td>${formatCurrency(comissao.valorPedido)}</td>
-                                    <td>${formatCurrency(comissao.valorComissao)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            ` : ''}
+            <h3>Resultado da Consulta de Comissões para o mês informado</h3>
+            <p><strong>Vendedor:</strong> ${data.nomeVendedor || 'Desconhecido'}</p>
+            <p><strong>Total de Comissões:</strong> ${formatCurrency(data.valorTotal)}</p>
         </div>
     `;
 }
@@ -533,13 +633,13 @@ function renderComissoesResult(data) {
 function renderPagination(entity, totalPages, currentPage) {
     const container = document.getElementById(`${entity}-pagination`);
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     if (totalPages <= 1) return;
-    
+
     const pagination = createPagination(currentPage, totalPages, (page) => {
-        switch(entity) {
+        switch (entity) {
             case 'clientes':
                 loadClientes(page);
                 break;
@@ -554,7 +654,7 @@ function renderPagination(entity, totalPages, currentPage) {
                 break;
         }
     });
-    
+
     container.appendChild(pagination);
 }
 
@@ -562,15 +662,15 @@ function renderPagination(entity, totalPages, currentPage) {
 function setupForms() {
     // Vendedor Form
     const vendedorForm = document.getElementById('vendedor-form');
-    vendedorForm.addEventListener('submit', async function(e) {
+    vendedorForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(vendedorForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         const submitBtn = vendedorForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             await VendedorAPI.create(data);
             showToast('Vendedor criado com sucesso', 'success');
@@ -584,18 +684,18 @@ function setupForms() {
             setLoadingState(submitBtn, false);
         }
     });
-    
+
     // Produto Form
     const produtoForm = document.getElementById('produto-form');
-    produtoForm.addEventListener('submit', async function(e) {
+    produtoForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(produtoForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         const submitBtn = produtoForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             if (editingId) {
                 await ProdutoAPI.update(editingId, data);
@@ -604,7 +704,7 @@ function setupForms() {
                 await ProdutoAPI.create(data);
                 showToast('Produto criado com sucesso', 'success');
             }
-            
+
             closeModal('produto-modal');
             produtoForm.reset();
             editingId = null;
@@ -615,24 +715,24 @@ function setupForms() {
             setLoadingState(submitBtn, false);
         }
     });
-    
+
     // Redefinir Senha Form
     const redefinirSenhaForm = document.getElementById('redefinir-senha-form');
-    redefinirSenhaForm.addEventListener('submit', async function(e) {
+    redefinirSenhaForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(redefinirSenhaForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         // Validate password confirmation
         if (data.novaSenha !== data.confirmarSenha) {
             showFieldErrors([{ field: 'confirmarSenha', message: 'Senhas não conferem' }]);
             return;
         }
-        
+
         const submitBtn = redefinirSenhaForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             await UserAPI.redefinirSenha({
                 senhaAtual: data.senhaAtual,
@@ -649,7 +749,7 @@ function setupForms() {
 }
 
 // Reset modal on close
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal')) {
         editingId = null;
         document.getElementById('produto-modal-title').textContent = 'Novo Produto';

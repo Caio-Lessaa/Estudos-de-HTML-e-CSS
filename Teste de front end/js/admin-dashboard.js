@@ -5,22 +5,19 @@ let currentPage = 1;
 let editingId = null;
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
     if (user.role !== 'ADMIN') {
         showToast('Acesso negado', 'error');
         logout();
         return;
     }
-    
-    // Update user info
-    document.getElementById('user-info').textContent = `Logado como: ${user.username}`;
-    
+
     // Load initial data
     loadDistribuidores();
-    
+
     // Setup forms
     setupForms();
 });
@@ -29,19 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function showSection(section) {
     // Hide all sections
     document.querySelectorAll('.content-area').forEach(el => el.classList.add('hidden'));
-    
+
     // Show selected section
     document.getElementById(`${section}-section`).classList.remove('hidden');
-    
+
     // Update navigation
     document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
     document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
-    
+
     currentSection = section;
     currentPage = 1;
-    
+
     // Load data for section
-    switch(section) {
+    switch (section) {
         case 'distribuidores':
             loadDistribuidores();
             break;
@@ -79,7 +76,7 @@ async function loadClientes(page = 0) {
 
     } catch (error) {
         console.error('[loadClientes] Erro ao carregar clientes:', error);
-        document.getElementById('clientes-table').innerHTML = 
+        document.getElementById('clientes-table').innerHTML =
             `<tr><td colspan="6" class="text-center text-error">Erro ao carregar clientes.</td></tr>`;
     }
 }
@@ -88,12 +85,12 @@ async function loadClientes(page = 0) {
 // Render Clientes Table
 function renderClientesTable(clientes) {
     const tbody = document.getElementById('clientes-table');
-    
+
     if (!clientes || clientes.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum cliente encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = clientes.map(cliente => `
         <tr>
             <td>${cliente.id}</td>
@@ -157,19 +154,16 @@ async function loadDistribuidores(page = 0) {
 // Render Distribuidores Table
 function renderDistribuidoresTable(distribuidores) {
     const tbody = document.getElementById('distribuidores-table');
-    
+
     if (!distribuidores || distribuidores.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum distribuidor encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = distribuidores.map(distribuidor => `
         <tr>
             <td>${distribuidor.id}</td>
             <td>${distribuidor.nome}</td>
-            <td>${distribuidor.email}</td>
-            <td>${distribuidor.telefone || '-'}</td>
-            <td>${distribuidor.status || 'Ativo'}</td>
             <td class="action-buttons">
                 <button class="btn-danger btn-sm" onclick="deleteDistribuidor(${distribuidor.id})">Excluir</button>
             </td>
@@ -180,7 +174,7 @@ function renderDistribuidoresTable(distribuidores) {
 // Delete Distribuidor
 async function deleteDistribuidor(id) {
     if (!confirm('Tem certeza que deseja excluir este distribuidor?')) return;
-    
+
     try {
         await DistribuidorAPI.delete(id);
         showToast('Distribuidor excluído com sucesso', 'success');
@@ -195,11 +189,11 @@ async function deleteDistribuidor(id) {
 //     try {
 //         const nome = document.getElementById('vendedor-nome-filter')?.value || '';
 //         const status = document.getElementById('vendedor-status-filter')?.value || '';
-        
+
 //         const filters = {};
 //         if (nome) filters.nome = nome;
 //         if (status) filters.status = status;
-        
+
 //         const data = await VendedorAPI.list(page, 10, filters);
 //         renderVendedoresTable(data.content || data);
 //         renderPagination('vendedores', data.totalPages || 1, page);
@@ -246,19 +240,19 @@ async function loadVendedores(page = 0) {
 // Render Vendedores Table
 function renderVendedoresTable(vendedores) {
     const tbody = document.getElementById('vendedores-table');
-    
+
     if (!vendedores || vendedores.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum vendedor encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = vendedores.map(vendedor => `
         <tr>
             <td>${vendedor.id}</td>
             <td>${vendedor.nome}</td>
             <td>${vendedor.email}</td>
             <td>${vendedor.status || 'Ativo'}</td>
-            <td>${vendedor.distribuidor || '-'}</td>
+            <td>${vendedor.distribuidorId || '-'}</td>
             <td class="action-buttons">
                 <button class="btn-danger btn-sm" onclick="deleteVendedor(${vendedor.id})">Desativar</button>
             </td>
@@ -269,7 +263,7 @@ function renderVendedoresTable(vendedores) {
 // Delete Vendedor
 async function deleteVendedor(id) {
     if (!confirm('Tem certeza que deseja desativar este vendedor?')) return;
-    
+
     try {
         await VendedorAPI.delete(id);
         showToast('Vendedor desativado com sucesso', 'success');
@@ -279,25 +273,9 @@ async function deleteVendedor(id) {
     }
 }
 
-// // Load Produtos
-// async function loadProdutos(page = 1) {
-//     try {
-//         const nome = document.getElementById('produto-nome-filter')?.value || '';
-        
-//         const filters = {};
-//         if (nome) filters.nome = nome;
-        
-//         const data = await ProdutoAPI.list(page, 10, filters);
-//         renderProdutosTable(data.content || data);
-//         renderPagination('produtos', data.totalPages || 1, page);
-//         currentPage = page;
-//     } catch (error) {
-//         console.error('Error loading produtos:', error);
-//         document.getElementById('produtos-table').innerHTML = 
-//             '<tr><td colspan="6" class="text-center">Erro ao carregar dados</td></tr>';
-//     }
-// }
+let produtos = []; // Lista global de produtos, para que você possa acessá-la em qualquer parte do código
 
+// Carregar produtos
 async function loadProdutos(page = 0) {
     console.log('[loadProdutos] Chamando com página:', page);
 
@@ -308,14 +286,17 @@ async function loadProdutos(page = 0) {
         if (nome) filters.nome = nome;
 
         const data = await ProdutoAPI.list(page, 10, filters);
-        const produtos = data.content || data;
+        const produtosListados = data.content || data;
 
-        if (!produtos || produtos.length === 0) {
+        if (!produtosListados || produtosListados.length === 0) {
             console.warn('[loadProdutos] Nenhum produto encontrado.');
             renderProdutosTable([]);
             renderPagination('produtos', 1, page);
             return;
         }
+
+        // Salva os produtos carregados no estado global
+        produtos = produtosListados;
 
         renderProdutosTable(produtos);
         renderPagination('produtos', data.totalPages || 1, page);
@@ -327,23 +308,27 @@ async function loadProdutos(page = 0) {
     }
 }
 
-
-// Render Produtos Table
+// Renderiza a tabela de produtos
 function renderProdutosTable(produtos) {
     const tbody = document.getElementById('produtos-table');
-    
+
     if (!produtos || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum produto encontrado</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Nenhum produto encontrado</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = produtos.map(produto => `
         <tr>
-            <td>${produto.id}</td>
-            <td>${produto.nome}</td>
+            <td>${produto.id || '-'}</td>
+            <td>${produto.codigoProduto || '-'}</td>
+            <td>${produto.nome || '-'}</td>
+            <td>${produto.categoria || '-'}</td>
             <td>${produto.descricao || '-'}</td>
-            <td>${formatCurrency(produto.preco)}</td>
-            <td>${produto.estoque || 0}</td>
+            <td>${formatCurrency(produto.precoVenda)}</td>
+            <td>${formatCurrency(produto.precoCusto)}</td>
+            <td>${produto.estoqueAtual != null ? produto.estoqueAtual : '-'}</td>
+            <td>${produto.estoqueMinimo != null ? produto.estoqueMinimo : '-'}</td>
+            <td>${produto.ncm || '-'}</td>
             <td class="action-buttons">
                 <button class="btn-primary btn-sm" onclick="editProduto(${produto.id})">Editar</button>
                 <button class="btn-danger btn-sm" onclick="deleteProduto(${produto.id})">Excluir</button>
@@ -352,19 +337,82 @@ function renderProdutosTable(produtos) {
     `).join('');
 }
 
-// Edit Produto
-function editProduto(id) {
-    // Find produto in current data
-    // This is a simplified version - in real app, you'd fetch the specific produto
-    editingId = id;
-    document.getElementById('produto-modal-title').textContent = 'Editar Produto';
-    openModal('produto-modal');
+// Editar Produto
+async function editProduto(id) {
+    console.log('[editProduto] Editando produto com ID:', id);
+
+    try {
+        // Encontra o produto na lista de produtos já carregados
+        const produto = produtos.find(p => p.id === id);
+
+        if (!produto) {
+            alert('Produto não encontrado.');
+            return;
+        }
+
+        // Preenche os campos do modal com os dados do produto
+        document.getElementById('produto-modal-title').textContent = 'Editar Produto';
+        document.getElementById('produto-id').value = produto.id; // Adicionando o ID do produto
+        document.getElementById('produto-codigo').value = produto.codigoProduto || '';
+        document.getElementById('produto-nome').value = produto.nome || '';
+        document.getElementById('produto-descricao').value = produto.descricao || '';
+        document.getElementById('produto-preco-custo').value = produto.precoCusto || '';
+        document.getElementById('produto-preco').value = produto.precoVenda || '';
+        document.getElementById('produto-estoque').value = produto.estoqueAtual || '';
+        document.getElementById('produto-estoque-minimo').value = produto.estoqueMinimo || '';
+        document.getElementById('produto-ncm').value = produto.ncm || '';
+        document.getElementById('produto-categoria').value = produto.categoria || '';
+        document.getElementById('produto-img').value = produto.imgUrl || '';
+
+        // Exibe o modal
+        openModal('produto-modal');
+    } catch (error) {
+        console.error('[editProduto] Erro ao carregar produto:', error);
+        alert('Erro ao carregar produto. Tente novamente.');
+    }
 }
+
+async function saveProdutoEdit() {
+    // Pega o ID do produto do campo oculto
+    const id = document.getElementById('produto-id').value;
+
+    // Preenche o objeto produto com os novos dados
+    const produto = {
+        codigoProduto: document.getElementById('produto-codigo').value,
+        nome: document.getElementById('produto-nome').value,
+        descricao: document.getElementById('produto-descricao').value,
+        precoCusto: parseFloat(document.getElementById('produto-preco-custo').value),
+        precoVenda: parseFloat(document.getElementById('produto-preco').value),
+        estoqueAtual: parseInt(document.getElementById('produto-estoque').value),
+        estoqueMinimo: parseInt(document.getElementById('produto-estoque-minimo').value),
+        ncm: document.getElementById('produto-ncm').value,
+        categoria: document.getElementById('produto-categoria').value,
+        imgUrl: document.getElementById('produto-img').value
+    };
+
+    try {
+        // Chama a API para atualizar o produto
+        await ProdutoAPI.update(id, produto); // Atualiza o produto com o ID correto
+
+        // Exibe mensagem de sucesso
+        showToast('Produto atualizado com sucesso', 'success');
+
+        // Fecha o modal
+        closeModal('produto-modal');
+
+        // Recarrega a lista de produtos para refletir a edição
+        loadProdutos();
+    } catch (error) {
+        console.error('[saveProdutoEdit] Erro ao salvar edição:', error);
+        alert('Erro ao atualizar produto. Tente novamente.');
+    }
+}
+
 
 // Delete Produto
 async function deleteProduto(id) {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-    
+
     try {
         await ProdutoAPI.delete(id);
         showToast('Produto excluído com sucesso', 'success');
@@ -373,6 +421,7 @@ async function deleteProduto(id) {
         console.error('Error deleting produto:', error);
     }
 }
+
 
 // // Load Pedidos
 // async function loadPedidos(page = 1) {
@@ -413,15 +462,15 @@ async function loadPedidos(page = 0) {
 }
 
 // Render Pedidos Table
- function renderPedidosTable(pedidos) {
-     const tbody = document.getElementById('pedidos-table');
-    
-     if (!pedidos || pedidos.length === 0) {
-         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum pedido encontrado</td></tr>';
-         return;
-     }
-    
-     tbody.innerHTML = pedidos.map(pedido => `
+function renderPedidosTable(pedidos) {
+    const tbody = document.getElementById('pedidos-table');
+
+    if (!pedidos || pedidos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum pedido encontrado</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = pedidos.map(pedido => `
          <tr>
              <td>${pedido.id}</td>
              <td>${pedido.cliente.nome || '-'}</td>
@@ -434,13 +483,13 @@ async function loadPedidos(page = 0) {
              </td>
          </tr>
      `).join('');
- }
+}
 
 
 // Finalizar Pedido
 async function finalizarPedido(id) {
     if (!confirm('Tem certeza que deseja finalizar este pedido?')) return;
-    
+
     try {
         await PedidoAPI.finalizar(id);
         showToast('Pedido finalizado com sucesso', 'success');
@@ -453,7 +502,7 @@ async function finalizarPedido(id) {
 // Cancelar Pedido
 async function cancelarPedido(id) {
     if (!confirm('Tem certeza que deseja cancelar este pedido?')) return;
-    
+
     try {
         await PedidoAPI.cancelar(id);
         showToast('Pedido cancelado com sucesso', 'success');
@@ -467,13 +516,13 @@ async function cancelarPedido(id) {
 function renderPagination(entity, totalPages, currentPage) {
     const container = document.getElementById(`${entity}-pagination`);
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     if (totalPages <= 1) return;
-    
+
     const pagination = createPagination(currentPage, totalPages, (page) => {
-        switch(entity) {
+        switch (entity) {
             case 'distribuidores':
                 loadDistribuidores(page);
                 break;
@@ -488,7 +537,7 @@ function renderPagination(entity, totalPages, currentPage) {
                 break;
         }
     });
-    
+
     container.appendChild(pagination);
 }
 
@@ -496,15 +545,15 @@ function renderPagination(entity, totalPages, currentPage) {
 function setupForms() {
     // Distribuidor Form
     const distribuidorForm = document.getElementById('distribuidor-form');
-    distribuidorForm.addEventListener('submit', async function(e) {
+    distribuidorForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(distribuidorForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         const submitBtn = distribuidorForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             await DistribuidorAPI.create(data);
             showToast('Distribuidor criado com sucesso', 'success');
@@ -517,18 +566,18 @@ function setupForms() {
             setLoadingState(submitBtn, false);
         }
     });
-    
+
     // Produto Form
     const produtoForm = document.getElementById('produto-form');
-    produtoForm.addEventListener('submit', async function(e) {
+    produtoForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(produtoForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         const submitBtn = produtoForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             if (editingId) {
                 await ProdutoAPI.update(editingId, data);
@@ -537,7 +586,7 @@ function setupForms() {
                 await ProdutoAPI.create(data);
                 showToast('Produto criado com sucesso', 'success');
             }
-            
+
             closeModal('produto-modal');
             produtoForm.reset();
             editingId = null;
@@ -548,24 +597,24 @@ function setupForms() {
             setLoadingState(submitBtn, false);
         }
     });
-    
+
     // Redefinir Senha Form
     const redefinirSenhaForm = document.getElementById('redefinir-senha-form');
-    redefinirSenhaForm.addEventListener('submit', async function(e) {
+    redefinirSenhaForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(redefinirSenhaForm);
         const data = Object.fromEntries(formData.entries());
-        
+
         // Validate password confirmation
         if (data.novaSenha !== data.confirmarSenha) {
             showFieldErrors([{ field: 'confirmarSenha', message: 'Senhas não conferem' }]);
             return;
         }
-        
+
         const submitBtn = redefinirSenhaForm.querySelector('button[type="submit"]');
         setLoadingState(submitBtn, true);
-        
+
         try {
             await UserAPI.redefinirSenha({
                 senhaAtual: data.senhaAtual,
@@ -582,7 +631,7 @@ function setupForms() {
 }
 
 // Reset modal on close
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal')) {
         editingId = null;
         document.getElementById('produto-modal-title').textContent = 'Novo Produto';
